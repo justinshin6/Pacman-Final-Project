@@ -1,0 +1,71 @@
+README pacman
+
+Overview:
+    Pacman:
+        My Pacman game has a pacman that moves across a 23x23 maze. There are also four ghosts in the game.
+        If the pacman collides with any of the ghosts he loses one life, and all of the positions for the pacman
+        and the ghost are reset. If the Pacman collides with a dot or energizer, then they disappear from the board,
+        and the game score increments. Every time an energizer is eaten, the ghosts turn into frightened mode for a
+        short time.
+    Ghosts:
+        The ghosts can be in one of three modes: scatter, chase, or frightened. In Chase mode the ghosts chase after
+        locations either at the specific pacman location or a location around the pacman location. In scatter mode,
+        the ghosts "scatter" to one of the four corners of the maze. In either scatter or chase mode, the ghosts move
+        according to a breadth-first-search algorithm. In frightened mode, the ghost behavior changes and the pacman is
+        able to eat the ghosts. They all change their color to blue and revert back to their original colors when the
+        duration for the frightened mode is over. The ghost pen periodically releases ghosts to the free square just
+        above the ghost pen. When a ghost is eaten, it disappears and reappears inside the ghost pen.
+    Scoring:
+        Whenever Pacman eats a dot, energizer, or ghost, the game score updates by these values:
+        Dot: +10 points
+        Energizer: +100 points
+        Ghost: +200 points
+    Winning and Losing:
+        The game ends either when all of the dots and energizers are eaten or when the pacman has no lives remaining.
+        When the game ends, the ghosts and pacman all stop moving, and keyboard input is turned off.
+
+Design Choices:
+    A major part of the functionality for the pacman program was implementing the breadth-search algorithm for the
+    ghosts to find the shortest path to a specific target location around or at the pacman location. Multiple data
+    structures were used for the BFS algorithm. First, BoardCoordinates were used to represent squares on the board.
+    A 2D array of type Direction was also used to keep track of the initial directions for the ghost for each
+    iteration of the BFS algorithm. Finally, a Queue data structure was used to make sure that we visit all squares.
+    By first adding each cell by enqueuing their BoardCoordinate location and then adding the neighbors at each
+    iteration, I was able to implement the BFS algorithm using these three components.
+
+    I also used a Queue for the ghost pen whenever the ghost is eaten in frightened mode. We wanted the first ghost to
+    be eaten to be the first one to exit the ghost pen. Therefore, a Queue was set up for the ghosts in the pen so that
+    when a ghost is eaten, it is added to the front of the Queue to achieve the "first in, first out" functionality.
+
+    Another major design choice was associating the game class with the ghost class. I found it difficult to achieve
+    certain functionalities, specifically the ghost collision functionality, without doing this association. This is
+    because, for example, the ghost class didn't know about the ghost pen, since the ghost pen Queue was instantiated
+    in the Game class. Therefore, to set up this association, I first associated the game class with the maze class
+    since the ghosts are instantiated in the maze class. Then the ghosts knew about the game through the maze class,
+    so this was a two-part association.
+
+    I used two enums in this pacman project. THe first enum was in charge of directions to track which direction the
+    pacman was moving. The enum also has methods to check the opposite direction and the new row and column value
+    when moving in that direction. This was used to simply the logic in the pacman and ghost classes. Additionally, a
+    GhostBehavior enum was used to keep track of the three different ghost modes.
+
+    For collisions, each MazeSquare contained a Collidable ArrayList, where the Collidable interface was implemented
+    in the dot, energizer, and ghost classes since they all collide with the pacman, but they all have different
+    functionalities whenever the collision occurs. Whenever the pacman is at a certain MazeSquare, it would loop
+    through the Collidable ArrayList and perform each respective collision action on the specific collidable in
+    the ArrayList to achieve the collision functionality.
+
+Known Bugs:
+    One example of debugging was trying to figure out wrapping for the ghosts and the pacman. I got two main
+    exceptions when debugging. First, I got an ArrayOutOfBoundsException because the array for the Maze column would
+    be -1 or 23, which is outside the bounds of the 2D array. I would have to implement an if statement to make sure
+    that these indices weren't reached. Secondly, I got a NullPointerException. After debugging, I found out this was
+    because the Direction for the ghost and the pacman were null which is why this exception was showing up. By
+    implementing another if statement to check if the direction is null, I was able to get rid of the exception and
+    achieve the wrapping functionality.
+
+    As of now, there are no known major bugs.
+
+Debugging Collaborators: none
+
+Hours Spent: 40
